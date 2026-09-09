@@ -20,7 +20,7 @@
     min-height:100vh;
     font-family:'IBM Plex Sans', sans-serif; color:var(--text);
   }
-  .app{ max-width:1100px; margin:0 auto; padding:28px 24px 60px; }
+  .app{ max-width:1100px; margin:0 auto; padding:28px 24px 100px; }
 
   #auth-screen{ max-width:420px; margin:80px auto; padding:0 20px; }
   #auth-screen h1{ font-family:'Fraunces', serif; font-weight:500; font-size:34px; margin:0 0 8px; }
@@ -33,6 +33,7 @@
   }
   .field textarea{ resize:vertical; min-height:120px; font-size:13.5px; line-height:1.5; }
   .field input:focus, .field select:focus, .field textarea:focus{ outline:1px solid var(--green-dim); }
+  .field .optional{ color:var(--muted); font-weight:400; }
   .btn-primary{
     background:linear-gradient(90deg, var(--green-dim), var(--green)); color:#06120c; border:none;
     font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:16px; padding:15px;
@@ -47,12 +48,17 @@
   }
 
   #app-screen{ display:none; }
-  .top-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:12px; }
+  .top-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:12px; }
   .top-row h1{ font-family:'Fraunces', serif; font-weight:500; font-size:24px; margin:0; }
   .icon-btn{ background:var(--surface-2); border:1px solid var(--line); color:var(--muted);
     font-size:13px; padding:9px 16px; border-radius:10px; cursor:pointer; font-family:'IBM Plex Sans', sans-serif; }
   .icon-btn:hover{ color:var(--text); border-color:var(--green-dim); }
   .icon-btn.accent{ color:var(--green); border-color:var(--green-dim); }
+
+  .tab-brief{ font-size:13.5px; color:var(--muted); margin:0 0 22px; line-height:1.5; }
+
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; }
 
   .top-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:20px; margin-bottom:20px; }
   @media (max-width:720px){ .top-grid{ grid-template-columns:1fr; } }
@@ -75,6 +81,7 @@
   }
   .quick-add-btn:hover{ filter:brightness(1.05); }
   .quick-add-btn.secondary{ background:transparent; color:var(--green); border:1px solid var(--green-dim); }
+  .quick-add-btn.small{ padding:8px 14px; font-size:13px; }
 
   .card h3{ font-size:16px; font-weight:500; margin:0 0 18px; display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:10px; }
   .card .note{ font-size:13px; color:var(--muted); font-weight:400; }
@@ -86,7 +93,7 @@
   .spend-row .amt{ font-size:13.5px; color:var(--muted); text-align:right; font-variant-numeric:tabular-nums; }
   .empty-note{ font-size:14px; color:var(--muted); padding:8px 0; }
 
-  #tx-list{ display:flex; flex-direction:column; }
+  #tx-list, #tx-list-full{ display:flex; flex-direction:column; }
   .tx-row{ display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid var(--line); }
   .tx-row:last-child{ border-bottom:none; }
   .tx-left{ display:flex; flex-direction:column; }
@@ -97,39 +104,44 @@
   .tx-del{ background:none; border:none; color:var(--muted); cursor:pointer; font-size:18px; line-height:1; padding:4px 6px; }
   .tx-del:hover{ color:var(--red); }
 
-  /* goal */
+  .goal-card{ background:var(--surface-2); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:14px; }
+  .goal-card:last-child{ margin-bottom:0; }
   .goal-top{ display:flex; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px; }
-  .goal-name{ font-size:16px; font-weight:500; }
-  .goal-pct{ font-family:'Fraunces', serif; color:var(--green); font-size:16px; }
-  .goal-track{ height:10px; background:var(--surface-2); border-radius:5px; overflow:hidden; margin-bottom:12px; }
+  .goal-name{ font-size:15.5px; font-weight:500; }
+  .goal-pct{ font-family:'Fraunces', serif; color:var(--green); font-size:15.5px; }
+  .goal-track{ height:9px; background:var(--bg); border-radius:5px; overflow:hidden; margin-bottom:12px; }
   .goal-fill{ height:100%; background:linear-gradient(90deg, var(--green-dim), var(--green)); border-radius:5px; transition:width .6s ease; }
-  .goal-nums{ display:flex; justify-content:space-between; font-size:13.5px; color:var(--muted); margin-bottom:16px; }
+  .goal-nums{ display:flex; justify-content:space-between; font-size:13px; color:var(--muted); margin-bottom:14px; }
   .goal-nums span.hi{ color:var(--text); }
+  .goal-actions{ display:flex; gap:8px; flex-wrap:wrap; }
 
-  /* investments */
   .invest-summary{ display:flex; gap:32px; margin-bottom:18px; flex-wrap:wrap; }
   .invest-summary div .label{ font-size:12.5px; color:var(--muted); margin:0 0 4px; }
   .invest-summary div .val{ font-family:'Fraunces', serif; font-size:22px; }
   .invest-summary .growth-pos{ color:var(--green); }
   .invest-summary .growth-neg{ color:var(--red); }
-  .invest-row{ display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--line); }
-  .invest-row:last-child{ border-bottom:none; }
+  .invest-card{ background:var(--surface-2); border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin-bottom:12px; }
+  .invest-card:last-child{ margin-bottom:0; }
+  .invest-row{ display:flex; justify-content:space-between; align-items:center; }
   .invest-left .name{ font-size:14.5px; }
   .invest-left .sub{ font-size:12.5px; color:var(--muted); margin-top:2px; }
   .invest-right{ text-align:right; display:flex; align-items:center; gap:12px; }
   .invest-right .val{ font-size:14.5px; }
   .invest-right .pct{ font-size:12.5px; }
+  .invest-projection{
+    margin-top:12px; padding-top:12px; border-top:1px solid var(--line);
+    font-size:12.5px; color:var(--muted); line-height:1.5;
+  }
+  .invest-projection strong{ color:var(--gold); font-family:'Fraunces', serif; font-size:1.15em; font-weight:500; }
 
-  /* calculator */
   .calc-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:16px; }
   @media (max-width:600px){ .calc-grid{ grid-template-columns:1fr; } }
   .calc-grid .field{ margin-bottom:0; }
   .calc-result{ background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:16px 18px; font-size:14.5px; color:var(--muted); }
   .calc-result strong{ color:var(--gold); font-family:'Fraunces', serif; font-size:1.3em; font-weight:500; }
 
-  /* modal */
   .modal-backdrop{ position:fixed; inset:0; background:rgba(5,10,8,0.65);
-    display:none; align-items:center; justify-content:center; z-index:10; padding:20px; overflow-y:auto; }
+    display:none; align-items:center; justify-content:center; z-index:20; padding:20px; overflow-y:auto; }
   .modal-backdrop.open{ display:flex; }
   .modal{ background:var(--surface-2); border:1px solid var(--line); border-radius:18px; padding:28px; width:100%; max-width:460px; margin:auto; }
   .modal.wide{ max-width:640px; }
@@ -154,6 +166,21 @@
   .review-name{ display:flex; flex-direction:column; }
   .review-name .sub{ font-size:11px; color:var(--muted); }
 
+  .tab-bar{
+    position:fixed; bottom:0; left:0; right:0; z-index:15;
+    background:var(--surface); border-top:1px solid var(--line);
+    display:flex; justify-content:center;
+  }
+  .tab-bar-inner{ max-width:1100px; width:100%; display:flex; }
+  .tab-btn{
+    flex:1; background:none; border:none; color:var(--muted);
+    font-family:'IBM Plex Sans', sans-serif; font-size:12px;
+    padding:12px 4px 10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px;
+  }
+  .tab-btn .dot{ width:6px; height:6px; border-radius:50%; background:transparent; }
+  .tab-btn.active{ color:var(--green); }
+  .tab-btn.active .dot{ background:var(--green); }
+
   footer.credit{ text-align:center; color:var(--muted); font-size:13px; margin-top:32px; }
 </style>
 </head>
@@ -175,61 +202,87 @@
     <div class="top-row">
       <h1>Orynva</h1>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="icon-btn accent" id="open-import">Import M-Pesa</button>
         <button class="icon-btn" id="edit-balance-btn">Set balance</button>
         <button class="icon-btn" id="logout-btn">Log out</button>
       </div>
     </div>
 
-    <div class="top-grid">
-      <div class="card balance-block">
-        <p class="label">Available money</p>
-        <p class="amount" id="available-amount"><span class="cur">KSh</span>0</p>
-        <p class="spent-line">Spent this month: <span id="spent-total">KSh 0</span></p>
-        <div class="btn-row">
-          <button class="quick-add-btn" id="open-add">+ Log an expense</button>
+    <div class="tab-panel active" id="tab-dashboard">
+      <p class="tab-brief">A quick snapshot of your money right now — what you have, what you've spent, and what's happened lately.</p>
+      <div class="top-grid">
+        <div class="card balance-block">
+          <p class="label">Available money</p>
+          <p class="amount" id="available-amount"><span class="cur">KSh</span>0</p>
+          <p class="spent-line">Spent this month: <span id="spent-total">KSh 0</span></p>
+          <div class="btn-row"><button class="quick-add-btn" id="open-add">+ Log an expense</button></div>
+        </div>
+        <div class="card">
+          <h3>Where it went <span class="note">this month</span></h3>
+          <div id="categories"></div>
+          <p class="empty-note" id="empty-cat-note">No spending logged yet.</p>
         </div>
       </div>
+      <div class="card">
+        <h3>Recent transactions</h3>
+        <div id="tx-list"></div>
+      </div>
+    </div>
 
+    <div class="tab-panel" id="tab-spending">
+      <p class="tab-brief">Every shilling you've spent, organized by category, plus a shortcut to pull in your M-Pesa history instead of typing it all by hand.</p>
+      <div class="card">
+        <h3>Log or import <button class="icon-btn accent" id="open-import">Import M-Pesa</button></h3>
+        <button class="quick-add-btn" id="open-add-2">+ Log an expense</button>
+      </div>
       <div class="card">
         <h3>Where it went <span class="note">this month</span></h3>
-        <div id="categories"></div>
-        <p class="empty-note" id="empty-cat-note">No spending logged yet.</p>
+        <div id="categories-full"></div>
+        <p class="empty-note" id="empty-cat-note-full">No spending logged yet.</p>
+      </div>
+      <div class="card">
+        <h3>All transactions</h3>
+        <div id="tx-list-full"></div>
       </div>
     </div>
 
-    <div class="card">
-      <h3>Recent transactions</h3>
-      <div id="tx-list"></div>
-    </div>
-
-    <div class="card" id="goal-card">
-      <h3>Savings goal
-        <button class="quick-add-btn secondary" id="open-goal-empty" style="padding:8px 14px; font-size:13px; display:none;">+ Set a goal</button>
-      </h3>
-      <div id="goal-body"></div>
-    </div>
-
-    <div class="card">
-      <h3>Investments
-        <button class="quick-add-btn secondary" id="open-invest" style="padding:8px 14px; font-size:13px;">+ Add investment</button>
-      </h3>
-      <div class="invest-summary" id="invest-summary"></div>
-      <div id="invest-list"></div>
-      <p class="empty-note" id="empty-invest-note">No investments logged yet.</p>
-    </div>
-
-    <div class="card">
-      <h3>See it grow</h3>
-      <div class="calc-grid">
-        <div class="field"><label>Amount (KSh)</label><input type="number" id="calc-amount" placeholder="10000" value="10000"></div>
-        <div class="field"><label>Annual rate (%)</label><input type="number" id="calc-rate" placeholder="10" value="10"></div>
-        <div class="field"><label>Years</label><input type="number" id="calc-years" placeholder="5" value="5"></div>
+    <div class="tab-panel" id="tab-goals">
+      <p class="tab-brief">What you're saving for, and how close you are — money set aside here comes out of your available balance, same as any other spending.</p>
+      <div class="card">
+        <h3>Savings goals <button class="quick-add-btn secondary small" id="open-goal">+ New goal</button></h3>
+        <div id="goals-list"></div>
+        <p class="empty-note" id="empty-goal-note">No savings goals yet — set one to start directing money toward something specific.</p>
       </div>
-      <div class="calc-result" id="calc-result"></div>
+    </div>
+
+    <div class="tab-panel" id="tab-investment">
+      <p class="tab-brief">What your money is doing beyond spending and saving — track what you've put in, what it's worth now, and play with growth scenarios.</p>
+      <div class="card">
+        <h3>Investments <button class="quick-add-btn secondary small" id="open-invest">+ Add investment</button></h3>
+        <div class="invest-summary" id="invest-summary"></div>
+        <div id="invest-list"></div>
+        <p class="empty-note" id="empty-invest-note">No investments logged yet.</p>
+      </div>
+      <div class="card">
+        <h3>See it grow <span class="note">general calculator</span></h3>
+        <div class="calc-grid">
+          <div class="field"><label>Amount (KSh)</label><input type="number" id="calc-amount" placeholder="10000" value="10000"></div>
+          <div class="field"><label>Annual rate (%)</label><input type="number" id="calc-rate" placeholder="10" value="10"></div>
+          <div class="field"><label>Years</label><input type="number" id="calc-years" placeholder="5" value="5"></div>
+        </div>
+        <div class="calc-result" id="calc-result"></div>
+      </div>
     </div>
 
     <footer class="credit">Orynva — Phase 0 through Phase 4 build.</footer>
+  </div>
+
+  <div class="tab-bar" id="tab-bar" style="display:none;">
+    <div class="tab-bar-inner">
+      <button class="tab-btn active" data-tab="dashboard"><span class="dot"></span>Dashboard</button>
+      <button class="tab-btn" data-tab="spending"><span class="dot"></span>Spending</button>
+      <button class="tab-btn" data-tab="goals"><span class="dot"></span>Goals</button>
+      <button class="tab-btn" data-tab="investment"><span class="dot"></span>Investment</button>
+    </div>
   </div>
 
   <div class="modal-backdrop" id="add-sheet">
@@ -262,6 +315,7 @@
       <div class="field"><label>Name</label><input type="text" id="invest-name" placeholder="e.g. Money market fund"></div>
       <div class="field"><label>Amount invested (KSh)</label><input type="number" id="invest-amount" placeholder="0"></div>
       <div class="field"><label>Current value (KSh)</label><input type="number" id="invest-value" placeholder="0"></div>
+      <div class="field"><label>Expected annual rate (%) <span class="optional">— optional, for projections</span></label><input type="number" id="invest-rate" placeholder="e.g. 10"></div>
       <div class="modal-actions">
         <button class="btn-cancel" id="cancel-invest">Cancel</button>
         <button class="btn-save" id="save-invest">Save investment</button>
@@ -269,7 +323,6 @@
     </div>
   </div>
 
-  <!-- create goal modal -->
   <div class="modal-backdrop" id="goal-sheet">
     <div class="modal">
       <h3>Set a savings goal</h3>
@@ -282,7 +335,6 @@
     </div>
   </div>
 
-  <!-- add to goal modal -->
   <div class="modal-backdrop" id="add-to-goal-sheet">
     <div class="modal">
       <h3>Add to goal</h3>
@@ -303,492 +355,4 @@
           <label>Paste your M-Pesa SMS messages below</label>
           <textarea id="import-text" placeholder="Confirmed. Ksh500.00 paid to NAIVAS SUPERMARKET on 5/9/26 at 2:30 PM. New M-PESA balance is Ksh4,300.00."></textarea>
         </div>
-        <p class="hint">Open your Messages app, select several M-Pesa confirmation texts, copy, and paste them here. Only "sent to", "paid to", and "withdrawn" messages are picked up as expenses — incoming money is ignored. This is a best-effort reading, so double-check the review screen before importing.</p>
-        <div class="modal-actions">
-          <button class="btn-cancel" id="cancel-import">Cancel</button>
-          <button class="btn-save" id="parse-import">Read messages</button>
-        </div>
-      </div>
-      <div id="import-step-review" style="display:none;">
-        <p class="hint" id="review-count-note" style="margin-top:0;"></p>
-        <div class="review-list" id="review-list"></div>
-        <div class="modal-actions">
-          <button class="btn-cancel" id="back-import">Back</button>
-          <button class="btn-save" id="confirm-import">Import selected</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<script>
-const SUPABASE_URL = "https://pefaextusqnlngjrtbkp.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_5nI0VPBvF_rmeI8_WLdUKQ_-5qbZKCC";
-
-const CATEGORIES = ["Food","Transport","Shopping","Bills","Entertainment","Other"];
-let selectedCategory = null;
-let currentUser = null;
-let profile = { available_balance: 0 };
-let expenses = [];
-let investments = [];
-let goal = null;
-let parsedImport = [];
-let supa = null;
-
-function fmt(n){ return Math.round(n).toLocaleString('en-KE'); }
-function escapeHtml(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-function isConfigured(){
-  return SUPABASE_URL && SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.length > 10;
-}
-if(isConfigured()){
-  supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-} else {
-  document.getElementById('config-warning').style.display = 'block';
-}
-
-// ---------- AUTH ----------
-let mode = 'login';
-document.getElementById('auth-toggle').addEventListener('click', ()=>{
-  mode = mode === 'login' ? 'signup' : 'login';
-  document.getElementById('auth-submit').textContent = mode === 'login' ? 'Log in' : 'Sign up';
-  document.getElementById('auth-toggle').textContent = mode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Log in";
-  document.getElementById('auth-error').textContent = '';
-});
-document.getElementById('auth-submit').addEventListener('click', async ()=>{
-  if(!supa){ document.getElementById('auth-error').textContent = 'Add your Supabase URL and key first.'; return; }
-  const email = document.getElementById('auth-email').value.trim();
-  const password = document.getElementById('auth-password').value;
-  const errEl = document.getElementById('auth-error');
-  errEl.textContent = '';
-  if(!email || !password){ errEl.textContent = 'Enter an email and password.'; return; }
-  let result = mode === 'login'
-    ? await supa.auth.signInWithPassword({ email, password })
-    : await supa.auth.signUp({ email, password });
-  if(result.error){ errEl.textContent = result.error.message; return; }
-  if(mode === 'signup' && !result.data.session){ errEl.textContent = 'Check your email to confirm your account, then log in.'; return; }
-  await onAuthed(result.data.user);
-});
-document.getElementById('logout-btn').addEventListener('click', async ()=>{
-  await supa.auth.signOut();
-  currentUser = null;
-  document.getElementById('app-screen').style.display = 'none';
-  document.getElementById('auth-screen').style.display = 'block';
-});
-async function onAuthed(user){
-  currentUser = user;
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('app-screen').style.display = 'block';
-  await loadProfile();
-  await loadExpenses();
-  await loadInvestments();
-  await loadGoal();
-  render();
-  runCalc();
-}
-async function init(){
-  if(!supa) return;
-  const { data } = await supa.auth.getSession();
-  if(data.session){ await onAuthed(data.session.user); }
-}
-init();
-
-// ---------- DATA: profile & expenses ----------
-async function loadProfile(){
-  const { data } = await supa.from('profiles').select('*').eq('user_id', currentUser.id).maybeSingle();
-  if(data){ profile = data; }
-  else { await supa.from('profiles').insert({ user_id: currentUser.id, available_balance: 0 }); profile = { available_balance: 0 }; }
-}
-async function loadExpenses(){
-  const { data } = await supa.from('expenses').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-  expenses = data || [];
-}
-async function saveBalance(newBalance){
-  await supa.from('profiles').upsert({ user_id: currentUser.id, available_balance: newBalance, updated_at: new Date().toISOString() });
-  profile.available_balance = newBalance;
-}
-async function addExpense(category, amount, note, createdAt){
-  const payload = { user_id: currentUser.id, category, amount, note: note || null };
-  if(createdAt) payload.created_at = createdAt;
-  const { data, error } = await supa.from('expenses').insert(payload).select().single();
-  if(!error) expenses.unshift(data);
-}
-async function deleteExpense(id){
-  await supa.from('expenses').delete().eq('id', id);
-  expenses = expenses.filter(e => e.id !== id);
-}
-function totalSpent(){ return expenses.reduce((s,t)=>s+Number(t.amount),0); }
-
-// ---------- DATA: goal ----------
-async function loadGoal(){
-  const { data } = await supa.from('goals').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(1).maybeSingle();
-  goal = data || null;
-}
-async function createGoal(name, target){
-  const { data, error } = await supa.from('goals').insert({ user_id: currentUser.id, name, target_amount: target, saved_amount: 0 }).select().single();
-  if(!error) goal = data;
-}
-async function addToGoalSaved(amount){
-  const newSaved = Number(goal.saved_amount) + amount;
-  await supa.from('goals').update({ saved_amount: newSaved }).eq('id', goal.id);
-  goal.saved_amount = newSaved;
-}
-async function deleteGoal(){
-  await supa.from('goals').delete().eq('id', goal.id);
-  goal = null;
-}
-
-// ---------- DATA: investments ----------
-async function loadInvestments(){
-  const { data } = await supa.from('investments').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-  investments = data || [];
-}
-async function addInvestment(name, invested, current){
-  const { data, error } = await supa.from('investments').insert({ user_id: currentUser.id, name, invested_amount: invested, current_value: current }).select().single();
-  if(!error) investments.unshift(data);
-}
-async function deleteInvestment(id){
-  await supa.from('investments').delete().eq('id', id);
-  investments = investments.filter(i => i.id !== id);
-}
-
-// ---------- RENDER ----------
-function goalSavedTotal(){ return goal ? Number(goal.saved_amount) : 0; }
-
-function render(){
-  const spent = totalSpent();
-  const available = Number(profile.available_balance) - spent - goalSavedTotal();
-  const availEl = document.getElementById('available-amount');
-  availEl.innerHTML = `<span class="cur">KSh</span>${fmt(available)}`;
-  availEl.classList.toggle('negative', available < 0);
-  document.getElementById('spent-total').textContent = `KSh ${fmt(spent)}`;
-
-  const byCat = {};
-  CATEGORIES.forEach(c => byCat[c] = 0);
-  expenses.forEach(t => byCat[t.category] = (byCat[t.category]||0) + Number(t.amount));
-  const max = Math.max(1, ...Object.values(byCat));
-  const catContainer = document.getElementById('categories');
-  const emptyNote = document.getElementById('empty-cat-note');
-  const activeCats = CATEGORIES.filter(c => byCat[c] > 0).sort((a,b)=>byCat[b]-byCat[a]);
-  if(activeCats.length === 0){ catContainer.innerHTML = ''; emptyNote.style.display = 'block'; }
-  else {
-    emptyNote.style.display = 'none';
-    catContainer.innerHTML = activeCats.map(c => `
-      <div class="spend-row">
-        <span class="cat">${c}</span>
-        <div class="spend-track"><div class="spend-fill" style="width:${(byCat[c]/max*100).toFixed(0)}%"></div></div>
-        <span class="amt">${fmt(byCat[c])}</span>
-      </div>`).join('');
-  }
-
-  const txList = document.getElementById('tx-list');
-  if(expenses.length === 0){
-    txList.innerHTML = '<p class="empty-note">Nothing logged yet — log an expense or import from M-Pesa.</p>';
-  } else {
-    txList.innerHTML = expenses.map(t => `
-      <div class="tx-row">
-        <div class="tx-left">
-          <span class="tx-cat">${t.category}</span>
-          ${t.note ? `<span class="tx-note">${escapeHtml(t.note)}</span>` : ''}
-        </div>
-        <div class="tx-right">
-          <span class="tx-amt">-KSh ${fmt(t.amount)}</span>
-          <button class="tx-del" data-id="${t.id}" title="Delete">×</button>
-        </div>
-      </div>`).join('');
-    txList.querySelectorAll('.tx-del').forEach(btn=>{
-      btn.addEventListener('click', async ()=>{ await deleteExpense(btn.dataset.id); render(); });
-    });
-  }
-
-  renderGoal();
-  renderInvestments();
-}
-
-function renderGoal(){
-  const body = document.getElementById('goal-body');
-  const emptyBtn = document.getElementById('open-goal-empty');
-
-  if(!goal){
-    emptyBtn.style.display = 'inline-block';
-    body.innerHTML = '<p class="empty-note">No savings goal yet — set one to start directing money toward something specific.</p>';
-    return;
-  }
-  emptyBtn.style.display = 'none';
-
-  const pct = goal.target_amount > 0 ? Math.min(100, (goal.saved_amount / goal.target_amount) * 100) : 0;
-  body.innerHTML = `
-    <div class="goal-top">
-      <span class="goal-name">${escapeHtml(goal.name)}</span>
-      <span class="goal-pct">${pct.toFixed(0)}%</span>
-    </div>
-    <div class="goal-track"><div class="goal-fill" style="width:${pct}%"></div></div>
-    <div class="goal-nums">
-      <span><span class="hi">KSh ${fmt(goal.saved_amount)}</span> saved</span>
-      <span>of <span class="hi">KSh ${fmt(goal.target_amount)}</span></span>
-    </div>
-    <div class="btn-row">
-      <button class="quick-add-btn" id="open-add-to-goal" style="padding:11px 18px; font-size:14px;">Add to goal</button>
-      <button class="icon-btn" id="delete-goal-btn" style="padding:11px 16px; font-size:13px;">Remove goal</button>
-    </div>
-  `;
-
-  document.getElementById('open-add-to-goal').addEventListener('click', ()=>{
-    const spent = totalSpent();
-    const available = Number(profile.available_balance) - spent - goalSavedTotal();
-    document.getElementById('add-to-goal-note').textContent = `You currently have KSh ${fmt(available)} available.`;
-    document.getElementById('add-to-goal-amount').value = '';
-    document.getElementById('add-to-goal-sheet').classList.add('open');
-  });
-  document.getElementById('delete-goal-btn').addEventListener('click', async ()=>{
-    if(confirm('Remove this savings goal? This will not refund the saved amount back automatically — it just clears the goal.')){
-      await deleteGoal();
-      render();
-    }
-  });
-}
-
-function renderInvestments(){
-  const summaryEl = document.getElementById('invest-summary');
-  const listEl = document.getElementById('invest-list');
-  const emptyEl = document.getElementById('empty-invest-note');
-  if(investments.length === 0){
-    summaryEl.innerHTML = ''; listEl.innerHTML = ''; emptyEl.style.display = 'block'; return;
-  }
-  emptyEl.style.display = 'none';
-  const totalInvested = investments.reduce((s,i)=>s+Number(i.invested_amount),0);
-  const totalCurrent = investments.reduce((s,i)=>s+Number(i.current_value),0);
-  const growth = totalInvested > 0 ? ((totalCurrent - totalInvested) / totalInvested * 100) : 0;
-  const growthClass = growth >= 0 ? 'growth-pos' : 'growth-neg';
-  summaryEl.innerHTML = `
-    <div><p class="label">Total invested</p><p class="val">KSh ${fmt(totalInvested)}</p></div>
-    <div><p class="label">Current value</p><p class="val">KSh ${fmt(totalCurrent)}</p></div>
-    <div><p class="label">Growth</p><p class="val ${growthClass}">${growth >= 0 ? '+' : ''}${growth.toFixed(1)}%</p></div>
-  `;
-  listEl.innerHTML = investments.map(i => {
-    const g = i.invested_amount > 0 ? ((i.current_value - i.invested_amount) / i.invested_amount * 100) : 0;
-    const gClass = g >= 0 ? 'growth-pos' : 'growth-neg';
-    return `
-      <div class="invest-row">
-        <div class="invest-left">
-          <div class="name">${escapeHtml(i.name)}</div>
-          <div class="sub">Invested KSh ${fmt(i.invested_amount)}</div>
-        </div>
-        <div class="invest-right">
-          <div><div class="val">KSh ${fmt(i.current_value)}</div><div class="pct ${gClass}">${g >= 0 ? '+' : ''}${g.toFixed(1)}%</div></div>
-          <button class="tx-del" data-id="${i.id}" title="Delete">×</button>
-        </div>
-      </div>`;
-  }).join('');
-  listEl.querySelectorAll('.tx-del').forEach(btn=>{
-    btn.addEventListener('click', async ()=>{ await deleteInvestment(btn.dataset.id); renderInvestments(); });
-  });
-}
-
-// ---------- growth calculator ----------
-function runCalc(){
-  const amount = Number(document.getElementById('calc-amount').value) || 0;
-  const rate = Number(document.getElementById('calc-rate').value) || 0;
-  const years = Number(document.getElementById('calc-years').value) || 0;
-  const future = amount * Math.pow(1 + rate/100, years);
-  const gained = future - amount;
-  document.getElementById('calc-result').innerHTML =
-    `At ${rate}% a year, KSh ${fmt(amount)} could grow to <strong>KSh ${fmt(future)}</strong> in ${years} year${years===1?'':'s'} — that's about KSh ${fmt(gained)} in growth. (Simple compound estimate — actual returns vary.)`;
-}
-['calc-amount','calc-rate','calc-years'].forEach(id=>{
-  document.getElementById(id).addEventListener('input', runCalc);
-});
-
-// ---------- expense modal ----------
-function buildCatGrid(){
-  const grid = document.getElementById('cat-grid');
-  grid.innerHTML = CATEGORIES.map(c => `<div class="cat-chip" data-cat="${c}">${c}</div>`).join('');
-  grid.querySelectorAll('.cat-chip').forEach(chip=>{
-    chip.addEventListener('click', ()=>{
-      selectedCategory = chip.dataset.cat;
-      grid.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('selected'));
-      chip.classList.add('selected');
-    });
-  });
-}
-buildCatGrid();
-const addSheet = document.getElementById('add-sheet');
-document.getElementById('open-add').addEventListener('click', ()=>{
-  selectedCategory = null;
-  document.querySelectorAll('#cat-grid .cat-chip').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('input-amount').value = '';
-  document.getElementById('input-note').value = '';
-  addSheet.classList.add('open');
-});
-document.getElementById('cancel-add').addEventListener('click', ()=> addSheet.classList.remove('open'));
-document.getElementById('save-add').addEventListener('click', async ()=>{
-  const amount = Number(document.getElementById('input-amount').value);
-  const note = document.getElementById('input-note').value.trim();
-  if(!selectedCategory){ alert('Pick a category'); return; }
-  if(!amount || amount <= 0){ alert('Enter an amount'); return; }
-  await addExpense(selectedCategory, amount, note);
-  addSheet.classList.remove('open');
-  render();
-});
-
-// ---------- balance modal ----------
-const balanceSheet = document.getElementById('balance-sheet');
-document.getElementById('edit-balance-btn').addEventListener('click', ()=>{
-  document.getElementById('input-balance').value = profile.available_balance || '';
-  balanceSheet.classList.add('open');
-});
-document.getElementById('cancel-balance').addEventListener('click', ()=> balanceSheet.classList.remove('open'));
-document.getElementById('save-balance').addEventListener('click', async ()=>{
-  const val = Number(document.getElementById('input-balance').value) || 0;
-  await saveBalance(val);
-  balanceSheet.classList.remove('open');
-  render();
-});
-
-// ---------- goal modals ----------
-const goalSheet = document.getElementById('goal-sheet');
-document.getElementById('open-goal-empty').addEventListener('click', ()=>{
-  document.getElementById('goal-name').value = '';
-  document.getElementById('goal-target').value = '';
-  goalSheet.classList.add('open');
-});
-document.getElementById('cancel-goal').addEventListener('click', ()=> goalSheet.classList.remove('open'));
-document.getElementById('save-goal').addEventListener('click', async ()=>{
-  const name = document.getElementById('goal-name').value.trim();
-  const target = Number(document.getElementById('goal-target').value);
-  if(!name){ alert('Give your goal a name'); return; }
-  if(!target || target <= 0){ alert('Enter a target amount'); return; }
-  await createGoal(name, target);
-  goalSheet.classList.remove('open');
-  render();
-});
-
-const addToGoalSheet = document.getElementById('add-to-goal-sheet');
-document.getElementById('cancel-add-to-goal').addEventListener('click', ()=> addToGoalSheet.classList.remove('open'));
-document.getElementById('save-add-to-goal').addEventListener('click', async ()=>{
-  const amount = Number(document.getElementById('add-to-goal-amount').value);
-  if(!amount || amount <= 0){ alert('Enter an amount'); return; }
-  const spent = totalSpent();
-  const available = Number(profile.available_balance) - spent - goalSavedTotal();
-  if(amount > available){
-    if(!confirm(`That's more than your available money (KSh ${fmt(available)}). Add it anyway?`)) return;
-  }
-  await addToGoalSaved(amount);
-  addToGoalSheet.classList.remove('open');
-  render();
-});
-
-// ---------- investment modal ----------
-const investSheet = document.getElementById('invest-sheet');
-document.getElementById('open-invest').addEventListener('click', ()=>{
-  document.getElementById('invest-name').value = '';
-  document.getElementById('invest-amount').value = '';
-  document.getElementById('invest-value').value = '';
-  investSheet.classList.add('open');
-});
-document.getElementById('cancel-invest').addEventListener('click', ()=> investSheet.classList.remove('open'));
-document.getElementById('save-invest').addEventListener('click', async ()=>{
-  const name = document.getElementById('invest-name').value.trim();
-  const invested = Number(document.getElementById('invest-amount').value);
-  const current = Number(document.getElementById('invest-value').value);
-  if(!name){ alert('Give it a name'); return; }
-  if(!invested || invested <= 0){ alert('Enter amount invested'); return; }
-  await addInvestment(name, invested, current || invested);
-  investSheet.classList.remove('open');
-  renderInvestments();
-});
-
-// ---------- M-Pesa import ----------
-const importSheet = document.getElementById('import-sheet');
-document.getElementById('open-import').addEventListener('click', ()=>{
-  document.getElementById('import-text').value = '';
-  document.getElementById('import-step-paste').style.display = 'block';
-  document.getElementById('import-step-review').style.display = 'none';
-  importSheet.classList.add('open');
-});
-document.getElementById('cancel-import').addEventListener('click', ()=> importSheet.classList.remove('open'));
-document.getElementById('back-import').addEventListener('click', ()=>{
-  document.getElementById('import-step-paste').style.display = 'block';
-  document.getElementById('import-step-review').style.display = 'none';
-});
-
-const CATEGORY_KEYWORDS = {
-  Transport: ['uber','bolt','little cab','matatu','sacco','taxify','shuttle'],
-  Shopping: ['naivas','carrefour','quickmart','tuskys','chandarana','mall','supermarket','shop'],
-  Bills: ['safaricom','kplc','kenya power','nairobi water','dstv','gotv','zuku','wifi','rent','landlord'],
-  Entertainment: ['netflix','showmax','cinema','bet','sportpesa'],
-  Food: ['java','kfc','chicken','restaurant','hotel','cafe','food','eatery']
-};
-function guessCategory(text){
-  const lower = text.toLowerCase();
-  for(const [cat, words] of Object.entries(CATEGORY_KEYWORDS)){
-    if(words.some(w => lower.includes(w))) return cat;
-  }
-  return 'Other';
-}
-function parseMpesaMessages(raw){
-  const chunks = raw.split(/(?=Confirmed\.)/i).map(c => c.trim()).filter(c => c.length > 5);
-  const results = [];
-  chunks.forEach(chunk => {
-    const isExpense = /(sent to|paid to|withdrawn|bought)/i.test(chunk);
-    const isIncome = /(received|deposit of)/i.test(chunk) && !isExpense;
-    if(isIncome) return;
-    const amountMatch = chunk.match(/Ksh\s?([\d,]+(?:\.\d{1,2})?)/i);
-    if(!amountMatch) return;
-    const amount = parseFloat(amountMatch[1].replace(/,/g, ''));
-    if(!amount || amount <= 0) return;
-    let name = 'M-Pesa transaction';
-    let nameMatch = chunk.match(/(?:sent to|paid to)\s+([^\.]+?)(?:\s+on\s+\d|\.|\son\s)/i);
-    if(!nameMatch) nameMatch = chunk.match(/withdrawn from\s+([^\.]+?)(?:\s+on\s+\d|\.)/i);
-    if(nameMatch) name = nameMatch[1].trim();
-    else if(/bought/i.test(chunk)) name = 'Airtime / bundles';
-    let dateStr = null;
-    const dateMatch = chunk.match(/on\s+(\d{1,2}\/\d{1,2}\/\d{2,4})/i);
-    if(dateMatch){
-      const parts = dateMatch[1].split('/').map(p=>parseInt(p,10));
-      let [d,m,y] = parts;
-      if(y < 100) y += 2000;
-      const dt = new Date(y, m-1, d, 12, 0, 0);
-      if(!isNaN(dt.getTime())) dateStr = dt.toISOString();
-    }
-    results.push({ raw: chunk, name, amount, category: guessCategory(name), date: dateStr, include: true });
-  });
-  return results;
-}
-document.getElementById('parse-import').addEventListener('click', ()=>{
-  const raw = document.getElementById('import-text').value;
-  parsedImport = parseMpesaMessages(raw);
-  const countNote = document.getElementById('review-count-note');
-  const listEl = document.getElementById('review-list');
-  if(parsedImport.length === 0){
-    countNote.textContent = "Couldn't find any spending transactions in that text. Make sure you pasted full M-Pesa confirmation messages.";
-    listEl.innerHTML = '';
-  } else {
-    countNote.textContent = `Found ${parsedImport.length} transaction${parsedImport.length===1?'':'s'}. Review and adjust categories before importing.`;
-    listEl.innerHTML = parsedImport.map((p, idx) => `
-      <div class="review-row" data-idx="${idx}">
-        <input type="checkbox" class="review-include" ${p.include ? 'checked' : ''}>
-        <div class="review-name"><span>${escapeHtml(p.name)}</span><span class="sub">KSh ${fmt(p.amount)}</span></div>
-        <select class="review-cat">${CATEGORIES.map(c => `<option value="${c}" ${c===p.category?'selected':''}>${c}</option>`).join('')}</select>
-        <span></span>
-      </div>
-    `).join('');
-    listEl.querySelectorAll('.review-row').forEach(row => {
-      const idx = Number(row.dataset.idx);
-      row.querySelector('.review-include').addEventListener('change', e => { parsedImport[idx].include = e.target.checked; });
-      row.querySelector('.review-cat').addEventListener('change', e => { parsedImport[idx].category = e.target.value; });
-    });
-  }
-  document.getElementById('import-step-paste').style.display = 'none';
-  document.getElementById('import-step-review').style.display = 'block';
-});
-document.getElementById('confirm-import').addEventListener('click', async ()=>{
-  const toImport = parsedImport.filter(p => p.include);
-  if(toImport.length === 0){ importSheet.classList.remove('open'); return; }
-  for(const p of toImport){ await addExpense(p.category, p.amount, p.name, p.date); }
-  importSheet.classList.remove('open');
-  render();
-});
-</script>
-</body>
-</html>
+        <p class="hint">Open your Messages app, select several M-Pesa confirmation texts, copy, and paste them here. Only "sent to", "paid to", a
