@@ -43,24 +43,6 @@
     text-decoration:underline; padding:0; margin-top:18px; font-family:'IBM Plex Sans', sans-serif; }
   #auth-error{ color:var(--red); font-size:14px; margin-top:12px; min-height:18px; }
   #config-warning{
-    background:rgba(227,179,77,0.1); border:1px solid var(--gold); color:var(--gold);
-    font-size:13px; padding:14px 16px; border-radius:10px; margin-bottom:24px; display:none;
-  }
-
-  #app-screen{ display:none; }
-  .top-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:12px; }
-  .top-row h1{ font-family:'Fraunces', serif; font-weight:500; font-size:24px; margin:0; }
-  .icon-btn{ background:var(--surface-2); border:1px solid var(--line); color:var(--muted);
-    font-size:13px; padding:9px 16px; border-radius:10px; cursor:pointer; font-family:'IBM Plex Sans', sans-serif; }
-  .icon-btn:hover{ color:var(--text); border-color:var(--green-dim); }
-  .icon-btn.accent{ color:var(--green); border-color:var(--green-dim); }
-
-  .tab-brief{ font-size:13.5px; color:var(--muted); margin:0 0 22px; line-height:1.5; }
-
-  .tab-panel{ display:none; }
-  .tab-panel.active{ display:block; }
-
-  .top-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:20px; margin-bottom:20px; }
   @media (max-width:720px){ .top-grid{ grid-template-columns:1fr; } }
 
   .card{ background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:26px 28px; margin-bottom:20px; }
@@ -108,15 +90,6 @@
   .goal-card:last-child{ margin-bottom:0; }
   .goal-top{ display:flex; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px; }
   .goal-name{ font-size:15.5px; font-weight:500; }
-  .goal-pct{ font-family:'Fraunces', serif; color:var(--green); font-size:15.5px; }
-  .goal-track{ height:9px; background:var(--bg); border-radius:5px; overflow:hidden; margin-bottom:12px; }
-  .goal-fill{ height:100%; background:linear-gradient(90deg, var(--green-dim), var(--green)); border-radius:5px; transition:width .6s ease; }
-  .goal-nums{ display:flex; justify-content:space-between; font-size:13px; color:var(--muted); margin-bottom:14px; }
-  .goal-nums span.hi{ color:var(--text); }
-  .goal-actions{ display:flex; gap:8px; flex-wrap:wrap; }
-
-  .invest-summary{ display:flex; gap:32px; margin-bottom:18px; flex-wrap:wrap; }
-  .invest-summary div .label{ font-size:12.5px; color:var(--muted); margin:0 0 4px; }
   .invest-summary div .val{ font-family:'Fraunces', serif; font-size:22px; }
   .invest-summary .growth-pos{ color:var(--green); }
   .invest-summary .growth-neg{ color:var(--red); }
@@ -355,4 +328,49 @@
           <label>Paste your M-Pesa SMS messages below</label>
           <textarea id="import-text" placeholder="Confirmed. Ksh500.00 paid to NAIVAS SUPERMARKET on 5/9/26 at 2:30 PM. New M-PESA balance is Ksh4,300.00."></textarea>
         </div>
-        <p class="hint">Open your Messages app, select several M-Pesa confirmation texts, copy, and paste them here. Only "sent to", "paid to", a
+        <p class="hint">Open your Messages app, select several M-Pesa confirmation texts, copy, and paste them here. Only "sent to", "paid to", and "withdrawn" messages are picked up as expenses — incoming money is ignored. This is a best-effort reading, so double-check the review screen before importing.</p>
+        <div class="modal-actions">
+          <button class="btn-cancel" id="cancel-import">Cancel</button>
+          <button class="btn-save" id="parse-import">Read messages</button>
+        </div>
+      </div>
+      <div id="import-step-review" style="display:none;">
+        <p class="hint" id="review-count-note" style="margin-top:0;"></p>
+        <div class="review-list" id="review-list"></div>
+        <div class="modal-actions">
+          <button class="btn-cancel" id="back-import">Back</button>
+          <button class="btn-save" id="confirm-import">Import selected</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SUPABASE_URL = "https://pefaextusqnlngjrtbkp.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_5nI0VPBvF_rmeI8_WLdUKQ_-5qbZKCC";
+
+const CATEGORIES = ["Food","Transport","Shopping","Bills","Entertainment","Other"];
+let selectedCategory = null;
+let currentUser = null;
+let profile = { available_balance: 0 };
+let expenses = [];
+let investments = [];
+let goals = [];
+let activeGoalIdForAdd = null;
+let parsedImport = [];
+let supa = null;
+
+function fmt(n){ return Math.round(n).toLocaleString('en-KE'); }
+function escapeHtml(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function isConfigured(){
+  return SUPABASE_URL && SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.length > 10;
+}
+if(isConfigured()){
+  supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} else {
+  document.getElementById('config-warning').style.display = 'block';
+}
+
+docum
