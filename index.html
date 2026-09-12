@@ -104,6 +104,12 @@
   .tx-del{ background:none; border:none; color:var(--muted); cursor:pointer; font-size:18px; line-height:1; padding:4px 6px; }
   .tx-del:hover{ color:var(--red); }
 
+  .savings-card{ background:var(--surface-2); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin-bottom:20px; }
+  .savings-top{ display:flex; gap:32px; flex-wrap:wrap; margin-bottom:16px; }
+  .savings-top .label{ font-size:12.5px; color:var(--muted); margin:0 0 4px; }
+  .savings-top .val{ font-family:'Fraunces', serif; font-size:24px; }
+  .savings-top .val.muted{ color:var(--muted); font-size:18px; }
+
   .goal-card{ background:var(--surface-2); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:14px; }
   .goal-card:last-child{ margin-bottom:0; }
   .goal-top{ display:flex; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px; }
@@ -114,6 +120,10 @@
   .goal-nums{ display:flex; justify-content:space-between; font-size:13px; color:var(--muted); margin-bottom:14px; }
   .goal-nums span.hi{ color:var(--text); }
   .goal-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+
+  .emergency-track{ height:9px; background:var(--bg); border-radius:5px; overflow:hidden; margin:14px 0 12px; }
+  .emergency-fill{ height:100%; background:linear-gradient(90deg, var(--green-dim), var(--green)); border-radius:5px; transition:width .6s ease; }
+  .emergency-note{ font-size:12.5px; color:var(--muted); margin:0 0 16px; line-height:1.5; }
 
   .invest-summary{ display:flex; gap:32px; margin-bottom:18px; flex-wrap:wrap; }
   .invest-summary div .label{ font-size:12.5px; color:var(--muted); margin:0 0 4px; }
@@ -202,7 +212,8 @@
     <div class="top-row">
       <h1>Orynva</h1>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="icon-btn" id="edit-balance-btn">Set balance</button>
+        <button class="icon-btn accent" id="open-addmoney">+ Add money</button>
+        <button class="icon-btn" id="edit-balance-btn">Correct balance</button>
         <button class="icon-btn" id="logout-btn">Log out</button>
       </div>
     </div>
@@ -246,7 +257,17 @@
     </div>
 
     <div class="tab-panel" id="tab-goals">
-      <p class="tab-brief">What you're saving for, and how close you are — money set aside here comes out of your available balance, same as any other spending.</p>
+      <p class="tab-brief">Money moves from Available money into your Savings account first — then you assign it to specific goals from there.</p>
+
+      <div class="savings-card">
+        <div class="savings-top">
+          <div><p class="label">Savings account</p><p class="val" id="savings-total">KSh 0</p></div>
+          <div><p class="label">Assigned to goals</p><p class="val muted" id="savings-allocated">KSh 0</p></div>
+          <div><p class="label">Unassigned</p><p class="val muted" id="savings-unallocated">KSh 0</p></div>
+        </div>
+        <button class="quick-add-btn secondary small" id="open-move-savings">+ Move money to savings</button>
+      </div>
+
       <div class="card">
         <h3>Savings goals <button class="quick-add-btn secondary small" id="open-goal">+ New goal</button></h3>
         <div id="goals-list"></div>
@@ -256,6 +277,21 @@
 
     <div class="tab-panel" id="tab-investment">
       <p class="tab-brief">What your money is doing beyond spending and saving — track what you've put in, what it's worth now, and play with growth scenarios.</p>
+
+      <div class="card">
+        <h3>Emergency fund
+          <button class="quick-add-btn secondary small" id="open-emergency-target">Set target</button>
+        </h3>
+        <div class="savings-top">
+          <div><p class="label">Saved</p><p class="val" id="emergency-balance">KSh 0</p></div>
+          <div><p class="label">Target</p><p class="val muted" id="emergency-target">KSh 0</p></div>
+          <div><p class="label">Progress</p><p class="val muted" id="emergency-pct">0%</p></div>
+        </div>
+        <div class="emergency-track"><div class="emergency-fill" id="emergency-fill" style="width:0%"></div></div>
+        <p class="emergency-note" id="emergency-hint">A common guideline is 3–6 months of your regular spending, kept easy to access rather than invested.</p>
+        <button class="quick-add-btn small" id="open-emergency-add">+ Add funds</button>
+      </div>
+
       <div class="card">
         <h3>Investments <button class="quick-add-btn secondary small" id="open-invest">+ Add investment</button></h3>
         <div class="invest-summary" id="invest-summary"></div>
@@ -298,72 +334,30 @@
     </div>
   </div>
 
+  <div class="modal-backdrop" id="addmoney-sheet">
+    <div class="modal">
+      <h3>Add money</h3>
+      <p class="hint" style="margin-top:0;">Just enter how much you're adding — it'll be added to what you already have, no need to work out the new total yourself.</p>
+      <div class="field"><label>Amount (KSh)</label><input type="number" id="input-addmoney" placeholder="0" min="0"></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="cancel-addmoney">Cancel</button>
+        <button class="btn-save" id="save-addmoney">Add</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-backdrop" id="balance-sheet">
     <div class="modal">
-      <h3>Set available money</h3>
-      <div class="field"><label>Amount (KSh)</label><input type="number" id="input-balance" placeholder="0" min="0"></div>
-      <div class="modal-actions">
-        <button class="btn-cancel" id="cancel-balance">Cancel</button>
-        <button class="btn-save" id="save-balance">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="invest-sheet">
-    <div class="modal">
-      <h3>Add an investment</h3>
-      <div class="field"><label>Name</label><input type="text" id="invest-name" placeholder="e.g. Money market fund"></div>
-      <div class="field"><label>Amount invested (KSh)</label><input type="number" id="invest-amount" placeholder="0"></div>
-      <div class="field"><label>Current value (KSh)</label><input type="number" id="invest-value" placeholder="0"></div>
-      <div class="field"><label>Expected annual rate (%) <span class="optional">— optional, for projections</span></label><input type="number" id="invest-rate" placeholder="e.g. 10"></div>
-      <div class="modal-actions">
-        <button class="btn-cancel" id="cancel-invest">Cancel</button>
-        <button class="btn-save" id="save-invest">Save investment</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="goal-sheet">
-    <div class="modal">
-      <h3>Set a savings goal</h3>
-      <div class="field"><label>What are you saving for?</label><input type="text" id="goal-name" placeholder="e.g. New phone"></div>
-      <div class="field"><label>Target amount (KSh)</label><input type="number" id="goal-target" placeholder="0"></div>
-      <div class="modal-actions">
-        <button class="btn-cancel" id="cancel-goal">Cancel</button>
-        <button class="btn-save" id="save-goal">Create goal</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="add-to-goal-sheet">
-    <div class="modal">
-      <h3>Add to goal</h3>
-      <p class="hint" id="add-to-goal-note" style="margin-top:0;"></p>
-      <div class="field"><label>Amount to add (KSh)</label><input type="number" id="add-to-goal-amount" placeholder="0"></div>
-      <div class="modal-actions">
-        <button class="btn-cancel" id="cancel-add-to-goal">Cancel</button>
-        <button class="btn-save" id="save-add-to-goal">Add</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="import-sheet">
-    <div class="modal wide">
-      <h3>Import from M-Pesa</h3>
-      <div id="import-step-paste">
-        <div class="field">
-          <label>Paste your M-Pesa SMS messages below</label>
-          <textarea id="import-text" placeholder="Confirmed. Ksh500.00 paid to NAIVAS SUPERMARKET on 5/9/26 at 2:30 PM. New M-PESA balance is Ksh4,300.00."></textarea>
-        </div>
-        <p class="hint">Open your Messages app, select several M-Pesa confirmation texts, copy, and paste them here. Only "sent to", "paid to", a
-          <script>
+      
+      <h3>Correct
+        <script>
 const SUPABASE_URL = "https://pefaextusqnlngjrtbkp.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_5nI0VPBvF_rmeI8_WLdUKQ_-5qbZKCC";
 
 const CATEGORIES = ["Food","Transport","Shopping","Bills","Entertainment","Other"];
 let selectedCategory = null;
 let currentUser = null;
-let profile = { available_balance: 0 };
+let profile = { available_balance: 0, savings_balance: 0, emergency_fund_balance: 0, emergency_fund_target: 0 };
 let expenses = [];
 let investments = [];
 let goals = [];
@@ -441,16 +435,47 @@ init();
 
 async function loadProfile(){
   const { data } = await supa.from('profiles').select('*').eq('user_id', currentUser.id).maybeSingle();
-  if(data){ profile = data; }
-  else { await supa.from('profiles').insert({ user_id: currentUser.id, available_balance: 0 }); profile = { available_balance: 0 }; }
+  if(data){
+    profile = data;
+    if(profile.savings_balance == null) profile.savings_balance = 0;
+    if(profile.emergency_fund_balance == null) profile.emergency_fund_balance = 0;
+    if(profile.emergency_fund_target == null) profile.emergency_fund_target = 0;
+  }
+  else {
+    await supa.from('profiles').insert({ user_id: currentUser.id, available_balance: 0, savings_balance: 0, emergency_fund_balance: 0, emergency_fund_target: 0 });
+    profile = { available_balance: 0, savings_balance: 0, emergency_fund_balance: 0, emergency_fund_target: 0 };
+  }
 }
 async function loadExpenses(){
   const { data } = await supa.from('expenses').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
   expenses = data || [];
 }
 async function saveBalance(newBalance){
-  await supa.from('profiles').upsert({ user_id: currentUser.id, available_balance: newBalance, updated_at: new Date().toISOString() });
+  await supa.from('profiles').upsert({ user_id: currentUser.id, available_balance: newBalance, savings_balance: profile.savings_balance, updated_at: new Date().toISOString() });
   profile.available_balance = newBalance;
+}
+async function addToAvailable(amount){
+  const newBalance = Number(profile.available_balance) + amount;
+  await supa.from('profiles').upsert({ user_id: currentUser.id, available_balance: newBalance, savings_balance: profile.savings_balance, updated_at: new Date().toISOString() });
+  profile.available_balance = newBalance;
+}
+async function moveToSavings(amount){
+  const newAvailable = Number(profile.available_balance) - amount;
+  const newSavings = Number(profile.savings_balance) + amount;
+  await supa.from('profiles').upsert({ user_id: currentUser.id, available_balance: newAvailable, savings_balance: newSavings, updated_at: new Date().toISOString() });
+  profile.available_balance = newAvailable;
+  profile.savings_balance = newSavings;
+}
+async function addToEmergencyFund(amount){
+  const newAvailable = Number(profile.available_balance) - amount;
+  const newEmergency = Number(profile.emergency_fund_balance) + amount;
+  await supa.from('profiles').upsert({ user_id: currentUser.id, available_balance: newAvailable, emergency_fund_balance: newEmergency, updated_at: new Date().toISOString() });
+  profile.available_balance = newAvailable;
+  profile.emergency_fund_balance = newEmergency;
+}
+async function setEmergencyTarget(target){
+  await supa.from('profiles').upsert({ user_id: currentUser.id, emergency_fund_target: target, updated_at: new Date().toISOString() });
+  profile.emergency_fund_target = target;
 }
 async function addExpense(category, amount, note, createdAt){
   const payload = { user_id: currentUser.id, category, amount, note: note || null };
@@ -483,6 +508,7 @@ async function deleteGoal(goalId){
   goals = goals.filter(g => g.id !== goalId);
 }
 function goalSavedTotal(){ return goals.reduce((s,g)=>s+Number(g.saved_amount),0); }
+function unallocatedSavings(){ return Number(profile.savings_balance) - goalSavedTotal(); }
 
 async function loadInvestments(){
   const { data } = await supa.from('investments').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
@@ -501,7 +527,7 @@ async function deleteInvestment(id){
 
 function render(){
   const spent = totalSpent();
-  const available = Number(profile.available_balance) - spent - goalSavedTotal();
+  const available = Number(profile.available_balance) - spent;
   const availEl = document.getElementById('available-amount');
   availEl.innerHTML = `<span class="cur">KSh</span>${fmt(available)}`;
   availEl.classList.toggle('negative', available < 0);
@@ -544,9 +570,24 @@ function render(){
 
   renderGoals();
   renderInvestments();
+  renderEmergency();
+}
+
+function renderEmergency(){
+  const balance = Number(profile.emergency_fund_balance);
+  const target = Number(profile.emergency_fund_target);
+  const pct = target > 0 ? Math.min(100, (balance / target) * 100) : 0;
+  document.getElementById('emergency-balance').textContent = `KSh ${fmt(balance)}`;
+  document.getElementById('emergency-target').textContent = target > 0 ? `KSh ${fmt(target)}` : 'Not set';
+  document.getElementById('emergency-pct').textContent = `${pct.toFixed(0)}%`;
+  document.getElementById('emergency-fill').style.width = pct + '%';
 }
 
 function renderGoals(){
+  document.getElementById('savings-total').textContent = `KSh ${fmt(profile.savings_balance)}`;
+  document.getElementById('savings-allocated').textContent = `KSh ${fmt(goalSavedTotal())}`;
+  document.getElementById('savings-unallocated').textContent = `KSh ${fmt(unallocatedSavings())}`;
+
   const listEl = document.getElementById('goals-list');
   const emptyEl = document.getElementById('empty-goal-note');
   if(goals.length === 0){ listEl.innerHTML = ''; emptyEl.style.display = 'block'; return; }
@@ -575,23 +616,20 @@ function renderGoals(){
     btn.addEventListener('click', ()=>{
       activeGoalIdForAdd = btn.dataset.id;
       const g = goals.find(g => g.id === activeGoalIdForAdd);
-      const spent = totalSpent();
-      const available = Number(profile.available_balance) - spent - goalSavedTotal();
-      document.getElementById('add-to-goal-note').textContent = `Adding to "${g.name}". You currently have KSh ${fmt(available)} available.`;
+      document.getElementById('add-to-goal-note').textContent = `Adding to "${g.name}". You have KSh ${fmt(unallocatedSavings())} unassigned in savings.`;
       document.getElementById('add-to-goal-amount').value = '';
       document.getElementById('add-to-goal-sheet').classList.add('open');
     });
   });
   listEl.querySelectorAll('.delete-goal-btn').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
-      if(confirm('Remove this savings goal? This just clears the goal — it does not refund the saved amount.')){
+      if(confirm('Remove this savings goal? The money already saved toward it returns to your unassigned savings.')){
         await deleteGoal(btn.dataset.id);
         render();
       }
     });
   });
-}
-            function renderInvestments(){
+  function renderInvestments(){
   const summaryEl = document.getElementById('invest-summary');
   const listEl = document.getElementById('invest-list');
   const emptyEl = document.getElementById('empty-invest-note');
@@ -688,6 +726,20 @@ document.getElementById('save-add').addEventListener('click', async ()=>{
   render();
 });
 
+const addMoneySheet = document.getElementById('addmoney-sheet');
+document.getElementById('open-addmoney').addEventListener('click', ()=>{
+  document.getElementById('input-addmoney').value = '';
+  addMoneySheet.classList.add('open');
+});
+document.getElementById('cancel-addmoney').addEventListener('click', ()=> addMoneySheet.classList.remove('open'));
+document.getElementById('save-addmoney').addEventListener('click', async ()=>{
+  const amount = Number(document.getElementById('input-addmoney').value);
+  if(!amount || amount <= 0){ alert('Enter an amount'); return; }
+  await addToAvailable(amount);
+  addMoneySheet.classList.remove('open');
+  render();
+});
+
 const balanceSheet = document.getElementById('balance-sheet');
 document.getElementById('edit-balance-btn').addEventListener('click', ()=>{
   document.getElementById('input-balance').value = profile.available_balance || '';
@@ -698,6 +750,29 @@ document.getElementById('save-balance').addEventListener('click', async ()=>{
   const val = Number(document.getElementById('input-balance').value) || 0;
   await saveBalance(val);
   balanceSheet.classList.remove('open');
+  render();
+});
+
+const moveSavingsSheet = document.getElementById('move-savings-sheet');
+document.getElementById('open-move-savings').addEventListener('click', ()=>{
+  const spent = totalSpent();
+  const available = Number(profile.available_balance) - spent;
+  document.getElementById('move-savings-note').textContent = `You currently have KSh ${fmt(available)} available to move.`;
+  document.getElementById('move-savings-amount').value = '';
+  moveSavingsSheet.classList.add('open');
+});
+document.getElementById('cancel-move-savings').addEventListener('click', ()=> moveSavingsSheet.classList.remove('open'));
+document.getElementById('save-move-savings').addEventListener('click', async ()=>{
+  const amount = Number(document.getElementById('move-savings-amount').value);
+  if(!amount || amount <= 0){ alert('Enter an amount'); return; }
+  const spent = totalSpent();
+  const available = Number(profile.available_balance) - spent;
+  if(amount > available){
+    alert(`You only have KSh ${fmt(available)} available to move.`);
+    return;
+  }
+  await moveToSavings(amount);
+  moveSavingsSheet.classList.remove('open');
   render();
 });
 
@@ -717,19 +792,58 @@ document.getElementById('save-goal').addEventListener('click', async ()=>{
   goalSheet.classList.remove('open');
   render();
 });
-  const addToGoalSheet = document.getElementById('add-to-goal-sheet');
+
+const addToGoalSheet = document.getElementById('add-to-goal-sheet');
 document.getElementById('cancel-add-to-goal').addEventListener('click', ()=> addToGoalSheet.classList.remove('open'));
 document.getElementById('save-add-to-goal').addEventListener('click', async ()=>{
   const amount = Number(document.getElementById('add-to-goal-amount').value);
   if(!amount || amount <= 0){ alert('Enter an amount'); return; }
-  const spent = totalSpent();
-  const available = Number(profile.available_balance) - spent - goalSavedTotal();
-  if(amount > available){
-    alert(`You only have KSh ${fmt(available)} available — reduce the amount or add more to your balance first.`);
+  if(amount > unallocatedSavings()){
+    alert(`You only have KSh ${fmt(unallocatedSavings())} unassigned in savings — move more into savings first, or reduce the amount.`);
     return;
   }
   await addToGoalSaved(activeGoalIdForAdd, amount);
   addToGoalSheet.classList.remove('open');
+  render();
+});
+
+          
+}
+          const emergencyTargetSheet = document.getElementById('emergency-target-sheet');
+document.getElementById('open-emergency-target').addEventListener('click', ()=>{
+  const spent = totalSpent();
+  document.getElementById('emergency-target-hint').textContent = `You spent about KSh ${fmt(spent)} this month — a common starting point is 3–6x that.`;
+  document.getElementById('emergency-target-input').value = profile.emergency_fund_target || '';
+  emergencyTargetSheet.classList.add('open');
+});
+document.getElementById('cancel-emergency-target').addEventListener('click', ()=> emergencyTargetSheet.classList.remove('open'));
+document.getElementById('save-emergency-target').addEventListener('click', async ()=>{
+  const val = Number(document.getElementById('emergency-target-input').value) || 0;
+  await setEmergencyTarget(val);
+  emergencyTargetSheet.classList.remove('open');
+  renderEmergency();
+});
+
+const emergencyAddSheet = document.getElementById('emergency-add-sheet');
+document.getElementById('open-emergency-add').addEventListener('click', ()=>{
+  const spent = totalSpent();
+  const available = Number(profile.available_balance) - spent;
+  document.getElementById('emergency-add-note').textContent = `You currently have KSh ${fmt(available)} available to move.`;
+  document.getElementById('emergency-add-amount').value = '';
+  emergencyAddSheet.classList.add('open');
+});
+document.getElementById('cancel-emergency-add').addEventListener('click', ()=> emergencyAddSheet.classList.remove('open'));
+document.getElementById('save-emergency-add').addEventListener('click', async ()=>{
+  const amount = Number(document.getElementById('emergency-add-amount').value);
+  if(!amount || amount <= 0){ alert('Enter an amount'); return; }
+  const spent = totalSpent();
+  const available = Number(profile.available_balance) - spent;
+  if(amount > available){
+    alert(`You only have KSh ${fmt(available)} available to move.`);
+    return;
+  }
+  await addToEmergencyFund(amount);
+  emergencyAddSheet.classList.remove('open');
   render();
 });
 
@@ -847,4 +961,5 @@ document.getElementById('confirm-import').addEventListener('click', async ()=>{
 });
 </script>
 </body>
-</html>          
+</html>
+          
